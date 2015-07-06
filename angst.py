@@ -26,7 +26,7 @@ def get_message(editor=None):
             subprocess.check_call([editor, f_in.name])
             with open(f_in.name) as f_out:
                 return f_out.read()
-        except IOError, subprocess.CalledProcessError:
+        except (IOError, subprocess.CalledProcessError):
             return None
 
 def file_with_message(in_file, message=None):
@@ -37,7 +37,7 @@ def file_with_message(in_file, message=None):
     """
     # Create the binary data for the message
     if message is None: message = ''
-    binary = (''.join('{:08b}'.format(ord(x)) for x in message))
+    binary = (''.join('{:07b}'.format(ord(x) & 0x7f) for x in message))
     len_binary = len(binary)
 
     # Add the angst binary data.
@@ -79,7 +79,7 @@ def run_add(args):
     message = get_message() if args.message is None else args.message
     if not message:
         sys.stderr.write(
-            'No message to add, use `angst remove` to remove angst.'
+            'Error: No message to add, use `angst remove` to remove angst.\n'
             )
         sys.exit(-1)
     run_write_message(args, message)
@@ -90,13 +90,14 @@ def run_remove(args):
 def run_read(args):
     data = []
     for i, line in enumerate(args.file):
-        x = 7 - (i % 8)
-        if x == 7: data.append(0)
+        x = 6 - (i % 7)
+        if x == 6: data.append(0)
 
         match = ending_re.search(line)
         if match:
             data[-1] += 2**x
 
+    # Write to stdout.
     print(''.join(chr(datum) for datum in data))
 
 def _create_argument_parser():
