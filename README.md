@@ -22,7 +22,7 @@ whitespace, or running through some lint tools will cause problems.
 Its a fun toy based on code originally written in an hour or so for an
 Alternate Reality Game.
 
-I'd very much welcome push requests with code that makes it more robust to
+I'd very much welcome pull requests with code that makes it more robust to
 changes, or allows a wider range of encodings (such as UTF-8) particularly.
 
 ## Installation
