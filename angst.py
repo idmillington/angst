@@ -6,6 +6,11 @@ import sys
 import argparse
 import tempfile
 import subprocess
+import re
+import warnings
+
+newline_re = re.compile(r'([\n\t]+)$')
+ending_re = re.compile(r'( +)([\n\t]+)$')
 
 def get_message(editor=None):
     """Launch the editor with an empty file, returning its contents on exit.
@@ -30,23 +35,31 @@ def file_with_message(in_file, message=None):
     This function always removes any message already there, so calling
     this without a message will clear any message already there.
     """
-    # Load the input file and convert to lines.
-    lines = in_file.readlines()
-    in_file.close()
-
     # Create the binary data for the message
     if message is None: message = ''
-    binary = (''.join(format(ord(x), 'b') for x in message))
+    binary = (''.join('{:08b}'.format(ord(x)) for x in message))
     len_binary = len(binary)
 
     # Add the angst binary data.
-    for i, line in enumerate(lines):
-        lines[i] = line.rstrip() + (
-            ' ' if i < len_binary and binary[i] == '1' else ''
+    result = []
+    for i, line in enumerate(in_file):
+        match = newline_re.search(line)
+        # We should only not get one on the last line.
+        if match:
+            line = line.rstrip() + (
+                ' ' if i < len_binary and binary[i] == '1' else ''
+                ) + match.group(1)
+        result.append(line)
+
+    if i < len_binary:
+        sys.stderr.write(
+            'Warning: Message needs %d lines to encode, file has %d. '
+            'Message has been truncated.\n' %
+            (len_binary, i)
             )
 
-    # Combine the lines. TODO: using the same line ending as we found.
-    result = '\n'.join(lines)
+    # Combine the lines.
+    result = ''.join(result)
     return result
 
 def get_out_fn(args):
@@ -75,7 +88,16 @@ def run_remove(args):
     run_write_message(args, message=None)
 
 def run_read(args):
-    print('Reading angst')
+    data = []
+    for i, line in enumerate(args.file):
+        x = 7 - (i % 8)
+        if x == 7: data.append(0)
+
+        match = ending_re.search(line)
+        if match:
+            data[-1] += 2**x
+
+    print(''.join(chr(datum) for datum in data))
 
 def _create_argument_parser():
     """Creates the argument parser."""

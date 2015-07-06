@@ -23,7 +23,7 @@ setup(
         'License :: OSI Approved :: MIT License',
 
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Build Tools',
+        'Topic :: Software Development :: Code Generators',
 
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.6',
@@ -34,7 +34,6 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
 
-    packages=['angst'],
     entry_points={
         'console_scripts': [
             'angst=angst:main'
