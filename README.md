@@ -10,6 +10,10 @@ And retreive them later
 
 The messages use trailing whitespace, so they won't be noticed easily.
 
+For more help, do
+
+    $ angst -h
+
 The system isn't designed to be robust. Editing lines, saving with stripped
 whitespace, or running through some lint tools will cause problems.
 
