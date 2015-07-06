@@ -12,6 +12,9 @@ import warnings
 newline_re = re.compile(r'([\n\t]+)$')
 ending_re = re.compile(r'( +)([\n\t]+)$')
 
+bits_per_char = 7
+binary_format = '{:0%db}' % bits_per_char
+
 def get_message(editor=None):
     """Launch the editor with an empty file, returning its contents on exit.
 
@@ -37,7 +40,8 @@ def file_with_message(in_file, message=None):
     """
     # Create the binary data for the message
     if message is None: message = ''
-    binary = (''.join('{:07b}'.format(ord(x) & 0x7f) for x in message))
+    message = message.decode('ascii', errors='ignore')
+    binary = (''.join(binary_format.format(ord(x)) for x in message))
     len_binary = len(binary)
 
     # Add the angst binary data.
@@ -90,8 +94,8 @@ def run_remove(args):
 def run_read(args):
     data = []
     for i, line in enumerate(args.file):
-        x = 6 - (i % 7)
-        if x == 6: data.append(0)
+        x = bits_per_char - 1 - (i % bits_per_char)
+        if x == bits_per_char - 1: data.append(0)
 
         match = ending_re.search(line)
         if match:

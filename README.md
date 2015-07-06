@@ -14,6 +14,8 @@ For more help, do
 
     $ angst -h
 
+## Limits
+
 The system isn't designed to be robust. Editing lines, saving with stripped
 whitespace, or running through some lint tools will cause problems.
 
@@ -22,3 +24,9 @@ Alternate Reality Game.
 
 I'd very much welcome push requests with code that makes it more robust to
 changes, or allows a wider range of encodings (such as UTF-8) particularly.
+
+## Installation
+
+Install with setuptools, or pip, e.g.
+
+    $ python setup.py install
